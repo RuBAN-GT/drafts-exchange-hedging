@@ -1,0 +1,45 @@
+# Course service
+###################################################################
+GET courses: courses.basic
+
+# Exchange services
+###################################################################
+
+# Balance
+GET exchange/balance: exchange.balance.info
+GET exchange/balance/actives: exchange.balance.actives
+GET exchange/balance/positions: exchange.balance.positions
+GET exchange/balance/status: exchange.balance.status
+GET exchange/balance/summary: exchange.balance.summary
+
+# Market
+GET exchange/data/last: exchange.market.last
+GET exchange/data/status: exchange.market.status
+GET exchange/market: exchange.market.last
+GET exchange/market/status: exchange.market.status
+
+# Orders
+GET exchange/orders: exchange.order.select
+GET exchange/orders/status: exchange.order.status
+GET exchange/orders/:orderId/:clientId: exchange.order.show
+DELETE exchange/orders/:orderId/:clientId: exchange.order.destroy
+POST exchange/orders/buy: exchange.order.buy
+POST exchange/orders/sell: exchange.order.sell
+
+# Extra for redis
+###################################################################
+GET store/:key: store.read
+POST store: store.write
+
+# API
+###################################################################
+GET swagger: swagger.schema
+
+# Debug information
+###################################################################
+GET nodes: $node.list
+GET nodes/actions: $node.actions
+GET nodes/health: $node.health
+GET nodes/options: $node.options
+GET nodes/services: $node.services
+GET nodes/up: extra.up

@@ -1,0 +1,615 @@
+swagger: "2.0"
+info:
+  description: "Хэдж-сервис."
+  version: "0.9.0"
+  title: "Exchange hedging"
+basePath: "/"
+tags:
+- name: "Courses"
+  description: "Информация о курсе биткоина к рублю"
+- name: "Balance"
+  description: "Информация о балансе портфеля биржи"
+- name: "Market"
+  description: "Информация о котировках биржи"
+- name: "Orders"
+  description: "Операции с заказами на бирже"
+
+paths:
+  /courses:
+    get:
+      tags: ["Courses"]
+      summary: "course.basic"
+      operationId: "course.basic"
+      responses:
+        200:
+          description: "Полученный курс"
+          schema:
+            $ref: "#/components/schemas/CourseResponse"
+  /exchange/balance:
+    get:
+      tags: ["Balance"]
+      summary: "exchange.balance.info"
+      operationId: "exchange.balance.info"
+      responses:
+        200:
+          description: "Денежный баланс портфеля"
+          schema:
+            $ref: "#/components/schemas/BalanceResponse"
+  /exchange/balance/actives:
+    get:
+      tags: ["Balance"]
+      summary: "exchange.balance.actives"
+      operationId: "exchange.balance.actives"
+      responses:
+        200:
+          description: "Активы портфеля биржи"
+          schema:
+            $ref: "#/components/schemas/BalanceActivesResponse"
+  /exchange/balance/positions:
+    get:
+      tags: ["Balance"]
+      summary: "exchange.balance.positions"
+      operationId: "exchange.balance.positions"
+      responses:
+        200:
+          description: "Открытые позиции портфеля"
+          schema:
+            $ref: "#/components/schemas/BalancePositionsResponse"
+  /exchange/balance/status:
+    get:
+      tags: ["Balance"]
+      summary: "exchange.balance.status"
+      operationId: "exchange.balance.status"
+      responses:
+        200:
+          description: "Статус сервиса подписки на обновление снимков баланса"
+          schema:
+            $ref: "#/components/schemas/BalanceStatusResponse"
+  /exchange/balance/summary:
+    get:
+      tags: ["Balance"]
+      summary: "exchange.balance.summary"
+      operationId: "exchange.balance.summary"
+      responses:
+        200:
+          description: "Суммарная информация о балансе"
+          schema:
+            $ref: "#/components/schemas/BalanceSummaryResponse"
+  /exchange/market:
+    get:
+      tags: ["Market"]
+      summary: "exchange.market.last"
+      operationId: "exchange.market.last"
+      responses:
+        200:
+          description: "Последний снимок котировок"
+          schema:
+            $ref: "#/components/schemas/MarketResponse"
+  /exchange/market/status:
+    get:
+      tags: ["Market"]
+      summary: "exchange.market.status"
+      operationId: "exchange.market.status"
+      responses:
+        200:
+          description: "Статус сервиса подписки на котировки"
+          schema:
+            $ref: "#/components/schemas/MarketStatusResponse"
+  /exchange/orders:
+    get:
+      tags: ["Orders"]
+      summary: "exchange.orders.select"
+      operationId: "exchange.orders.select"
+      parameters:
+      - in: "query"
+        name: "page"
+        description: "Номер страницы в выборке"
+        type: "integer"
+        minimun: 1
+      - in: "query"
+        name: "pageSize"
+        description: "Объём выборки на страницу"
+        type: "integer"
+        minimun: 10
+        maximum: 60
+      responses:
+        200:
+          description: "Список активных или успешных заказов на бирже"
+          schema:
+            $ref: "#/components/schemas/OrdersResponse"
+  /exchange/orders/status:
+    get:
+      tags: ["Orders"]
+      summary: "exchange.orders.status"
+      operationId: "exchange.orders.status"
+      responses:
+        200:
+          description: "Статус подписки на обновление заказов"
+          schema:
+            $ref: "#/components/schemas/OrdersStatusResponse"
+  /exchange/orders/{orderId}/{clientId}:
+    get:
+      tags: ["Orders"]
+      summary: "exchange.order.show"
+      operationId: "exchange.order.show"
+      parameters:
+      - in: "path"
+        name: "orderId"
+        description: "Идентификатор биржи"
+        required: true
+        schema:
+          type: "integer"
+      - in: "path"
+        name: "clientId"
+        description: "Идентификатор хэдж-сервиса"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        200:
+          description: "Информацие о заказе"
+          schema:
+            $ref: "#/components/schemas/OrderResponse"
+    delete:
+      tags: ["Orders"]
+      summary: "exchange.order.delete"
+      operationId: "exchange.order.delete"
+      parameters:
+      - in: "path"
+        name: "orderId"
+        description: "Идентификатор биржи"
+        required: true
+        schema:
+          type: "integer"
+      - in: "path"
+        name: "clientId"
+        description: "Идентификатор хэдж-сервиса"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        200:
+          description: "Отменить заказ"
+          schema:
+            $ref: "#/components/schemas/OrderResponse"
+  /exchange/orders/buy:
+    post:
+      tags: ["Orders"]
+      summary: "exchange.order.buy"
+      operationId: "exchange.order.buy"
+      consumes: ["application/json"]
+      parameters:
+      - in: "body"
+        name: "order"
+        schema:
+          $ref: "#/definitions/OrderRequest"
+      responses:
+        200:
+          description: "Выставление заказа на покупку"
+          schema:
+            $ref: "#/components/schemas/OrderResponse"
+  /exchange/orders/sell:
+    post:
+      tags: ["Orders"]
+      summary: "exchange.order.sell"
+      operationId: "exchange.order.sell"
+      consumes: ["application/json"]
+      parameters:
+      - in: "body"
+        name: "order"
+        schema:
+          $ref: "#/definitions/OrderRequest"
+      responses:
+        200:
+          description: "Выставление заказа на продажу"
+          schema:
+            $ref: "#/components/schemas/OrderResponse"
+
+components:
+  schemas:
+    BalanceResponse:
+      allOf:
+      - $ref: "#/definitions/Response"
+      - type: "object"
+        properties:
+          data:
+            $ref: "#/definitions/Balance"
+    BalanceActivesResponse:
+      allOf:
+      - $ref: "#/definitions/Response"
+      - type: "object"
+        properties:
+          data:
+            type: "array"
+            items:
+              $ref: "#/definitions/Active"
+    BalancePositionsResponse:
+      allOf:
+      - $ref: "#/definitions/Response"
+      - type: "object"
+        properties:
+          data:
+            type: "array"
+            items:
+              $ref: "#/definitions/Position"
+    BalanceStatusResponse:
+      allOf:
+      - $ref: "#/definitions/Response"
+      - type: "object"
+        properties:
+          data:
+            type: "object"
+            properties:
+              logined:
+                description: "Статус успешной авторизации на биржи"
+                type: "boolean"
+                example: true
+              service:
+                description: "Выбранный шлюз"
+                type: "string"
+                example: "wss://example.com:443/continuum"
+              status:
+                description: "Статус сокета"
+                type: "string"
+                example: "OPEN"
+              subscribed:
+                description: "Статус подписки на все сервисы баланса"
+                type: "boolean"
+                example: true
+              subscriptions:
+                description: "Список сервисов подписок"
+                type: "array"
+                items:
+                  type: "string"
+    BalanceSummaryResponse:
+      allOf:
+      - $ref: "#/definitions/Response"
+      - type: "object"
+        properties:
+          data:
+            type: "object"
+            properties:
+              data:
+                type: "object"
+                properties:
+                  actives:
+                    description: "Из сервиса активов"
+                    type: "array"
+                    items:
+                      $ref: "#/definitions/Active"
+                  info:
+                    description: "Из сервиса общего баланса"
+                    $ref: "#/definitions/Balance"
+    CourseResponse:
+      allOf:
+      - $ref: "#/definitions/Response"
+      - type: "object"
+        properties:
+          data:
+            $ref: "#/definitions/Course"
+    MarketResponse:
+      allOf:
+      - $ref: "#/definitions/Response"
+      - type: "object"
+        properties:
+          data:
+            $ref: "#/definitions/Market"
+    MarketStatusResponse:
+      allOf:
+      - $ref: "#/definitions/Response"
+      - type: "object"
+        properties:
+          data:
+            type: "object"
+            properties:
+              logined:
+                description: "Статус успешной авторизации на биржи"
+                type: "boolean"
+                example: true
+              service:
+                description: "Выбранный шлюз"
+                type: "string"
+                example: "wss://example.com:443/continuum"
+              status:
+                description: "Статус сокета"
+                type: "string"
+                example: "OPEN"
+              subscribed:
+                description: "Статус подписки на котировки"
+                type: "boolean"
+                example: true
+              subscriptions:
+                description: "Список инструментов, на которые подписан сервис"
+                type: "array"
+                items:
+                  type: "integer"
+    OrderResponse:
+      allOf:
+      - $ref: "#/definitions/Response"
+      - type: "object"
+        properties:
+          data:
+            $ref: "#/definitions/Order"
+    OrdersResponse:
+      allOf:
+      - $ref: "#/definitions/Response"
+      - type: "object"
+        properties:
+          data:
+            type: "array"
+            items:
+              $ref: "#/definitions/Order"
+    OrdersStatusResponse:
+      allOf:
+      - $ref: "#/definitions/Response"
+      - type: "object"
+        properties:
+          data:
+            type: "object"
+            properties:
+              logined:
+                description: "Статус успешной авторизации на биржи"
+                type: "boolean"
+                example: true
+              service:
+                description: "Выбранный шлюз"
+                type: "string"
+                example: "wss://example.com:443/continuum"
+              status:
+                description: "Статус сокета"
+                type: "string"
+                example: "OPEN"
+              subscribed:
+                description: "Статус подписки на обновление заказов"
+                type: "boolean"
+                example: true
+
+definitions:
+  Response:
+    type: "object"
+    properties:
+      code:
+        description: "HTTP-код ответа"
+        type: "integer"
+        example: 200
+      errors:
+        description: "Информация об ошибках"
+        type: "array"
+        items:
+          type: "string"
+          example: "some error"
+      data:
+        description: "Данные"
+        type: "object"
+      meta:
+        description: "Мета-информация по операциям"
+        type: "object"
+        properties:
+          action:
+            description: "Код экшена, обрабатывающего запрос"
+            type: "string"
+            example: "service_name.action_name"
+          path:
+            description: "Зарегистрированный путь до выбранного экшена"
+            type: "string"
+            example: "/service_name/action_name"
+  Active:
+    type: object
+    properties:
+      contractId:
+        description: "Идентификатор контракта"
+        type: "integer"
+      contractName:
+        description: "Имя контракта"
+        type: "string"
+        example: "GLDRUB_TOM"
+      contractType:
+        description: "Тип контракта"
+        type: "string"
+        example: "gold"
+      qty:
+        description: "Приобретённое число лотов"
+        type: "integer"
+  Balance:
+    type: object
+    properties:
+      accountId:
+        description: "Идентификатор портфеля"
+        type: "integer"
+      balance:
+        description: "Баланс"
+        type: "number"
+      purchasingPower:
+        description: "Реальная доступный баланс"
+        type: "number"
+      totalValue:
+        description: "Баланс с активами"
+        type: "number"
+      balanceUpdatedAt:
+        description: "Дата последнего обновления баланса портфеля"
+        type: "integer"
+        example: 1532935436576
+      collateralUpdatedAt:
+        description: "Дата последней обновления информации об обеспечении портфеля"
+        type: "integer"
+        example: 1532935436576
+  Course:
+    type: object
+    properties:
+      base:
+        description: "Основная валюта"
+        type: "string"
+        example: "btc"
+      target:
+        description: "Валюта для сравнения"
+        type: "string"
+        example: "rub"
+      price:
+        description: "Курс"
+        type: "number"
+  Market:
+    type: object
+    properties:
+      active:
+        description: "Статус активности инструмента"
+        type: "boolean"
+        example: true
+      contractId:
+        description: "Идентификатор инструмента"
+        type: "number"
+        example: 26387
+      contractName:
+        description: "Символьное имя инструмента"
+        type: "string"
+        example: "GLDRUB_TOM"
+      type:
+        description: "Тип инструмента"
+        type: "string"
+        example: "gold"
+      lotSize:
+        description: "Размер лота инструмента"
+        type: "integer"
+        example: 10
+      updatedAt:
+        description: "Дата снимка"
+        type: "integer"
+        example: 1532935436576
+      lastActiveDate:
+        description: "Дата последней активности инструмента"
+        type: "integer"
+        example: 1532935436576
+      lastSleepDate:
+        description: "Дата последней остановки инструмента"
+        type: "integer"
+        example: 1532935436576
+      marketValues:
+        description: "Небольшая статистика"
+        type: "object"
+      quote:
+        description: "Котировки"
+        type: "array"
+        items:
+          $ref: "#/definitions/Quote"
+  Order:
+    properties:
+      accountId:
+        description: "Идентификатор портфеля"
+        type: "integer"
+      contractId:
+        description: "Идентификатор контракта, по которому выставлен заказ"
+        type: "integer"
+      duration:
+        description: "Тип выставленной продолжительности заказа"
+        type: "integer"
+        enum: [2, 4]
+      goodThruUtcTime:
+        description: "Продолжительность заказа с типом лимит"
+        type: "integer"
+      limitPrice:
+        description: "Цена лимита при заказе с типом лимит"
+        type: "number"
+      clOrderId:
+        description: "Идентификатор заказа от хэдж-сервиса"
+        type: "integer"
+      orderId:
+        description: "Идентификатор заказа от биржи"
+        type: "integer"
+      orderType:
+        description: "Код типа заказа (маркет, лимит)"
+        type: "integer"
+        enum: [1, 2]
+      side:
+        description: "Код типа операции заказа (покупка, продажа)"
+        type: "integer"
+        enum: [1, 2]
+      status:
+        description: "Код статуса закзаа"
+        type: "integer"
+      transactionStatus:
+        description: "Цепочка транзакций заказа"
+        type: "array"
+        items:
+          type: "object"
+      fillQty:
+        descrion: "Реальное завершенное число лотов в заказе"
+        type: "integer"
+      qty:
+        description: "Число лотов в заказе"
+        type: "integer"
+      whenUtcTime:
+        description: "Время клиента в момент выставления заказа"
+        type: "integer"
+  OrderRequest:
+    type: "object"
+    required:
+    - "contractName"
+    - "orderType"
+    - "quantity"
+    properties:
+      contractName:
+        description: "Символьное имя контракта"
+        type: "string"
+        example: "GLDRUB_TOM"
+      orderType:
+        description: "Тип заказа"
+        type: "string"
+        example: "market"
+        enum: ["limit", "market"]
+      quantity:
+        description: "Число лотов заказа"
+        type: "integer"
+        example: 1
+        minimum: 1
+      duration:
+        description: "Дата окончания заказа с типом лимит (обязательно для лимита)"
+        type: "integer"
+        minimum: 60
+      limitPrice:
+        description: "Цена лимита (обязательно для лимита)"
+        type: "number"
+        minimum: 0
+  Position:
+    properties:
+      contractId:
+        description: "Идентификатор контракта"
+        type: "integer"
+      contractName:
+        description: "Имя контракта"
+        type: "string"
+        example: "GLDRUB_TOM"
+      contractType:
+        description: "Тип контракта"
+        type: "string"
+        example: "gold"
+      id:
+        description: "Идентификатор позиции"
+        type: "integer"
+      price:
+        description: "Средняя цена позиции"
+        type: "number"
+      side:
+        description: "Тип позиции"
+        type: "string"
+        enum: ["buy", "sell"]
+      qty:
+        description: "Число лотов в позиции"
+        type: "integer"
+  Quote:
+    type: "object"
+    properties:
+      name:
+        description: "Тип котировки"
+        type: "string"
+        enum: ["TRADE", "BESTBID", "BESTASK"]
+      type:
+        description: "Идентификатор котировки"
+        type: "integer"
+        enum: [0, 1, 2]
+      price:
+        description: "Значение котировки в рублях"
+        type: "number"
+        example: 2459.5
+      volume:
+        description: "Ежедневный объём торго в лотах"
+        type: "integer"
+        example: 4000

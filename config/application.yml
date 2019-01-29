@@ -1,0 +1,49 @@
+redis:
+  prefix: exchange.store
+  url: redis://localhost:6379
+service:
+  host: 127.0.0.1
+  port: 1919
+api:
+  accountId: 5 # id портфеля
+  path: wss://gateway_path # адрес шлюза
+  user: '' # логин пользователя биржи
+  password: ''
+  scaling: 10000 # коэф для цен котировок (передаются не в чистом виде, уникально для контракта)
+  contracts:
+    - id: 26387
+      type: gold
+      name: GLDRUB_TOM
+      lotSize: 10
+      safe:
+        id: 30872 # Для TOM происходит конвертация в другой контракт через день (TOMORROW)
+        name: GLD # GLDRUB_TOM -> GLD
+    - id: 26395
+      type: silver
+      name: SLVRUB_TOM
+      lotSize: 100
+      safe:
+        id: 33665
+        name: SLV #SLVRUB_TOM -> SLV
+course:
+  url: https://api.cryptonator.com/api/ticker # Источник для курса битка
+  ttl: 43200 # Время жизни локального курса
+bulkhead:
+  concurrency: 4 # Макс обрабатываемых сообщений
+  maxQueueSize: 20 # Макс очередь сообщений на обработку
+logging:
+  internal: true # Использовать winston или полный вывод в консоль
+  level: info # trace, debug, info, warn, error, fatal
+  maxSize: 1024000 # Максимальный размер файла логов
+  maxFiles: 3 # Макимальное число файлов в логах
+  messages: false # Логировать ли сообщения по сокету
+  ping: true # Бесконечное пингование в сервисе
+faultTolerance:
+  maxAttempts: 15 # Максимальное число пробных попыток решения проблемы подключений
+timeouts:
+  connection: 5000 # Максимальное время подключения
+  half: 30000 # Время ожидания устранения проблемы
+  ping: 10000 # Задержка после каждого понга
+  randomDelay: 5000 # Максимальное время при случайной задержки сервисов
+  request: 8000 # Максимальное время ожидания ответа при обычных запросах
+  retry: 3000 # Время ожидания при обычном переподключении

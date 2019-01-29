@@ -1,0 +1,7 @@
+api:
+  path: ws://localhost:1818
+  user: TEST
+  password: TEST
+timeouts:
+  connection: 1000
+  retry: 1000

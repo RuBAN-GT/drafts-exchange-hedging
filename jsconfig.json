@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["app/*"],
+      "brokers/*": ["app/brokers/*"],
+      "consts/*": ["app/constants/*"],
+      "config/*": ["app/config/*"],
+      "lib/*": ["app/lib/*"],
+      "services/*": ["app/services/*"],
+      "spec/*": ["spec/*"],
+      "utils/*": ["app/utils/*"],
+      "vendor/*": ["vendor/*"]
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

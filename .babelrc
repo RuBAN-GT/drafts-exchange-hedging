@@ -1,0 +1,35 @@
+{
+  "plugins": [
+    "transform-class-properties",
+    "transform-decorators-legacy",
+    "transform-decorators",
+    "transform-export-extensions",
+    "transform-object-rest-spread",
+    [
+      "module-resolver",
+      {
+        "root": ["./"],
+        "alias": {
+          "~": "./app",
+          "brokers": "./app/brokers",
+          "consts": "./app/constants",
+          "config": "./config",
+          "lib": "./app/lib",
+          "services": "./app/services",
+          "spec": "./spec",
+          "utils": "./app/utils",
+          "vendor": "./vendor"
+        }
+      }
+    ]
+  ],
+  "presets": [
+    ["env", {
+      "targets": {
+        "node": "current"
+      }
+    }]
+  ],
+  "retainLines": true,
+  "sourceMaps": "both"
+}

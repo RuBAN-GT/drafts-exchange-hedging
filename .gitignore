@@ -1,0 +1,32 @@
+# OS generated files
+._*
+*~
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+.Trash-*
+Desktop.ini
+ehthumbs.db
+Thumbs.db
+
+# Editors
+.idea
+*.sublime-project
+*.sublime-workspace
+.tags*
+*.tmproj
+*.tmproject
+tmtags
+.vim
+
+# Node
+node_modules
+
+# Project
+config/env/*
+!config/env/.keep
+!config/env/test.yml
+logs/*
+!logs/.keep
+tmp
